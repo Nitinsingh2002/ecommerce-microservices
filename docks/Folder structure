@@ -1,0 +1,21 @@
+ECommerce-Microservices/
+│
+├── ECommerce.sln          → Solution containing all projects
+│
+├── src                    → All microservices and business logic
+│
+├── building-blocks        → Shared libraries used by multiple services
+│
+├── infrastructure         → Platform configuration (DB, Kafka, Redis, monitoring)
+│
+├── docker                 → Dockerfiles and Docker Compose for local development
+│
+├── k8s                    → Kubernetes deployment manifests
+│
+├── docs                   → Project documentation and architecture
+│
+├── scripts                → Automation scripts for build, migrations, setup
+│
+└── tests                  → Unit, integration, and end-to-end test projects
+
+
