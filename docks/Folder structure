@@ -19,3 +19,65 @@ ECommerce-Microservices/
 └── tests                  → Unit, integration, and end-to-end test projects
 
 
+---------------------------------------------
+
+.editorconfig
+
+Keeps coding style consistent across all services.
+
+Examples:
+
+Indentation
+Naming conventions
+Formatting rules
+
+
+
+
+
+Directory.Build.props
+
+This is one of the most useful files in enterprise .NET projects.
+
+Instead of writing the same package versions in every project:
+
+Microsoft.EntityFrameworkCore 9.0.0
+Serilog 4.x
+FluentValidation
+
+You define common settings once.
+
+Every project automatically inherits them.
+
+
+
+
+
+global.json
+
+Locks the .NET SDK version.
+
+For example:
+
+{
+  "sdk": {
+    "version": "9.0.100"
+  }
+}
+
+Now every developer builds with the same SDK version.
+
+------------------------------------------------
+
+building-blocks/
+│
+├── SharedKernel/
+├── Common/
+├── Contracts/
+└── EventBus/
+
+
+SharedKernel → Domain-level shared code (entities, value objects, domain exceptions).
+Contracts → Events, integration contracts, shared DTOs for inter-service communication.
+EventBus → Kafka abstractions and messaging infrastructure.
+Common → Truly generic utilities and extensions. Avoid putting domain logic or business rules here.
