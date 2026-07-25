@@ -83,10 +83,5 @@ EventBus → Kafka abstractions and messaging infrastructure.
 Common → Truly generic utilities and extensions. Avoid putting domain logic or business rules here.
 
 
-├── Entities/
-├── Identity/
-├── Enums/
-├── Exceptions/
-├── Interfaces/
-├── Specifications/
-└── ValueObjects/
+
+
