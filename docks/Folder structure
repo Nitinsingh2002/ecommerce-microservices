@@ -81,3 +81,12 @@ SharedKernel → Domain-level shared code (entities, value objects, domain excep
 Contracts → Events, integration contracts, shared DTOs for inter-service communication.
 EventBus → Kafka abstractions and messaging infrastructure.
 Common → Truly generic utilities and extensions. Avoid putting domain logic or business rules here.
+
+
+├── Entities/
+├── Identity/
+├── Enums/
+├── Exceptions/
+├── Interfaces/
+├── Specifications/
+└── ValueObjects/
