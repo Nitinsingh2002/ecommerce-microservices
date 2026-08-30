@@ -32,13 +32,30 @@ public class IdentityServices : IIdentityService
         return new IdentityResultModel
         {
             Succeeded = result.Succeeded,
+
+
+
+            UserId = user.Id,
             Errors = result.Errors.Select(err => err.Description).ToArray()
         };
 
     }
 
+    public async Task <bool> AddToRoleAsync (Guid userId, string role, CancellationToken cancellationToken){
+        var user = await _userManager.FindByIdAsync(userId.ToString());
 
-    public async Task<bool> CheckPasswordAsync(string email, string password, string cancellationToken)
+        if ((user== null))
+        {
+            return false;
+        }
+
+        var result = await _userManager.AddToRoleAsync(user, role);
+        return result.Succeeded;
+
+    }
+
+
+    public async Task<bool> CheckPasswordAsync(string email, string password, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(email);
 
@@ -50,7 +67,7 @@ public class IdentityServices : IIdentityService
         return await _userManager.CheckPasswordAsync(user, password);
     }
 
-    public async Task<UserIdentityModel> FindByEmailasync(string email)
+    public async Task<UserIdentityModel> FindByEmailasync(string email,CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(email);
 
@@ -67,12 +84,20 @@ public class IdentityServices : IIdentityService
         };
     }
 
-    public Task<bool> CheckEmailExist(string email)
+    public async Task<bool> CheckEmailExist(string email)
     {
-        throw new NotImplementedException();
+        var user = await _userManager.FindByEmailAsync(email);
+        if(user == null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
-    public async Task<IReadOnlyCollection<string>> GetRoleAsync(Guid UserId, string cancellationToken)
+    public async Task<IReadOnlyCollection<string>> GetRoleAsync(Guid UserId, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByIdAsync(UserId.ToString());
 

@@ -1,6 +1,7 @@
 
 
 using Authentication.Domain.Identity;
+using BuildingBlocks.SharedKernel.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace Authentication.Infrastructure.Persistence.seed;
@@ -8,12 +9,13 @@ namespace Authentication.Infrastructure.Persistence.seed;
 
 public static class IdentitySeeder
 {
-    private static readonly string[] Roles = { "Admin", "Vendor", "Customer"};
 
     public static async Task SeedAsync(RoleManager<ApplicationRole> roleManager)
     {
-        foreach ( var  roleName in Roles)
+        // we are taking all the role from enum that we created in shaared kernel
+        foreach ( var  roleNames in Enum.GetValues<UserRole>())
         {
+            var roleName = roleNames.ToString();
             if( await roleManager.RoleExistsAsync(roleName))
             {
                 continue;
