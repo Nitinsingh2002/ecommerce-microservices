@@ -6,10 +6,11 @@ using Infrastucture.Persistence.Seed;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// builder.Services.AddOpenApi();
 
 // both are same here we consuming all the DI in commented there is extension menthod approch
 builder.Services.AddApplication();
@@ -26,7 +27,9 @@ await app.Services.SeedIdentityAsync();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    // app.MapOpenApi();
+     app.UseSwagger();
+     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
