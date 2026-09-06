@@ -1,5 +1,6 @@
 using Authentication.Application.DependencyInjection;
 using Authentication.Infrastructure.DependencyInjection;
+using Common.Extensions;
 using Infrastucture.Persistence.Seed;
 
 
@@ -21,6 +22,7 @@ builder.Services.addInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseGlobalExceptionalHandler();
 // calling Role seeder
 await app.Services.SeedIdentityAsync();
 

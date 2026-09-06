@@ -22,7 +22,7 @@ public class AuthContoller : ControllerBase
         typeof(RegisterResponse),
         StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task <ActionResult<RegisterResponseDTO>> Register([FromBody] RegisterRequest request, CancellationToken token
+    public async Task<ActionResult<RegisterResponseDTO>> Register([FromBody] RegisterRequest request, CancellationToken token
         )
     {
         var command = new RegisterCommand
@@ -35,10 +35,17 @@ public class AuthContoller : ControllerBase
 
         var result = await _sender.Send(command, token);
 
-        var response = new RegisterResponseDTO(result.Email,result.UserId);
+        var response = new RegisterResponseDTO(result.Email, result.UserId);
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
+
+    [HttpGet("test-exception")]
+    public IActionResult TestException()
+    {
+        throw new InvalidOperationException(
+            "This is a test exception.");
+    }
 
 }
 
