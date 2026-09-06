@@ -4,7 +4,7 @@ namespace BuildingBlock.SharedKernel.Results;
 
 public sealed class Result<T> : Result
 {
-    private Result(T value, bool isSucess, Error error)
+    private Result (T value, bool isSucess, Error error) : base (isSucess, error)
     {
         Value = value;
     }
