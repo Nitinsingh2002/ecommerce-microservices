@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
+using Authentication.Application.Behaviour;
 namespace Authentication.Application.DependencyInjection;
 
 public static class ApplicationServiceRegistration
@@ -10,6 +11,9 @@ public static class ApplicationServiceRegistration
         services.AddMediatR(configuration =>
         {
             configuration.RegisterServicesFromAssembly(typeof(ApplicationServiceRegistration).Assembly);
+
+            //Registering the pipeline behavior for validation
+            configuration.AddOpenBehavior(typeof(ValidatorBehaviour<,>));
         });
         return services;
     }
