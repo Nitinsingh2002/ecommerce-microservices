@@ -13,7 +13,7 @@ public class Result
     public bool IsFailure => !IsSuccess;
     public Error? Error { get; }
 
-    public static Result Sucess()
+    public static Result Success()
     {
         return new Result(true, null);
     }

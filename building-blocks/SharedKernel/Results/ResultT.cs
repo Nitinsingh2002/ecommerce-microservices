@@ -11,7 +11,7 @@ public sealed class Result<T> : Result
 
     public T Value { get; }
 
-    public static Result<T> Sucess(T value)
+    public static Result<T> Success(T value)
     {
         return new Result<T>(value, true, null);
     }

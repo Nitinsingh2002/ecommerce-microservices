@@ -1,8 +1,12 @@
 using Authentication.Api.Contracts.register;
+using Authentication.Api.Contracts.register;
 using Authentication.Application.Features.Register;
+using BuildingBlocks.SharedKernel.Results;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 namespace Authentication.Api.Contollers;
+
 
 [ApiController]
 [Route("/api/v1/[controller]")]
@@ -17,11 +21,7 @@ public class AuthContoller : ControllerBase
     }
 
 
-    [HttpPost]
-    [ProducesResponseType(
-        typeof(RegisterResponse),
-        StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPost("/register")]
     public async Task<ActionResult<RegisterResponseDTO>> Register([FromBody] RegisterRequest request, CancellationToken token
         )
     {
@@ -35,16 +35,21 @@ public class AuthContoller : ControllerBase
 
         var result = await _sender.Send(command, token);
 
-        var response = new RegisterResponseDTO(result.Email, result.UserId);
+        if (result.IsFailure)
+        {
+            return BadRequest(new
+            {
+                error = new
+                {
+                    code = result.Error.code,
+                    message = result.Error.message
+                }
+            });
+        }
+
+        var response = new RegisterResponseDTO(request.Email, result.Value.UserId);
+
         return StatusCode(StatusCodes.Status201Created, response);
-    }
-
-
-    [HttpGet("test-exception")]
-    public IActionResult TestException()
-    {
-        throw new InvalidOperationException(
-            "This is a test exception.");
     }
 
 }
