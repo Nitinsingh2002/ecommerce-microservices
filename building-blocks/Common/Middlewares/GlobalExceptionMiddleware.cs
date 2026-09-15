@@ -1,11 +1,12 @@
 
 using System.Net;
 using System.Text.Json;
+using Common.Responses;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using static System.Net.WebRequestMethods;
 using static System.Text.Json.JsonSerializer;
-using FluentValidation;
 
 namespace buildingblocks.Common.Middlewares;
 
@@ -52,14 +53,19 @@ public sealed class GlobalExceptionMiddleware
         context.Response.ContentType =
      "application/json";
 
-        var response = new
-        {
-            error = new
-            {
-                Code = "INTERNAL_SERVER_ERROR",
-                Message = "An Unexpected error occured"
-            }
-        };
+        // var response = new
+        // {
+        //     error = new
+        //     {
+        //         Code = "INTERNAL_SERVER_ERROR",
+        //         Message = "An Unexpected error occured"
+        //     }
+        // };
+
+        // using centralized error response class to return error response in a structured format instead of using anonymous objcet as shown above
+        var response = new ApiErrorResponse(
+            new ApiError("INTERNAL_SERVER_ERROR", "An Unexpected error occured")
+        );
 
 
         var jsonResponse = JsonSerializer.Serialize(response);

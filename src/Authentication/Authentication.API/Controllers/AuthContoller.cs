@@ -2,6 +2,7 @@ using Authentication.Api.Contracts.register;
 using Authentication.Api.Contracts.register;
 using Authentication.Application.Features.Register;
 using BuildingBlocks.SharedKernel.Results;
+using Common.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -35,16 +36,27 @@ public class AuthContoller : ControllerBase
 
         var result = await _sender.Send(command, token);
 
+        // if (result.IsFailure)
+        // {
+        //     return BadRequest(new
+        //     {
+        //         error = new
+        //         {
+        //             code = result.Error.code,
+        //             message = result.Error.message
+        //         }
+        //     });
+        // }
+
+
+        // using centralized error response class to return error response in a structured format.
         if (result.IsFailure)
         {
-            return BadRequest(new
-            {
-                error = new
-                {
-                    code = result.Error.code,
-                    message = result.Error.message
-                }
-            });
+            var ErrorResponse = new ApiErrorResponse(
+                new ApiError(result.Error.code, result.Error.message)
+            );
+
+            return BadRequest(ErrorResponse);
         }
 
         var response = new RegisterResponseDTO(request.Email, result.Value.UserId);
