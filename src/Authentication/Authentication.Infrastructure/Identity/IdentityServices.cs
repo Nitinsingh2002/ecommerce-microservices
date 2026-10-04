@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Authentication.Application.Abstractions.Authentication;
 using Authentication.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Authentication.Infrastructure.Identity;
@@ -11,10 +12,12 @@ namespace Authentication.Infrastructure.Identity;
 public class IdentityServices : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILogger<IdentityServices> _logger;
 
-    public IdentityServices(UserManager<ApplicationUser> _userManager)
+    public IdentityServices(UserManager<ApplicationUser> _userManager,ILogger<IdentityServices> _logger)
     {
         this._userManager = _userManager;
+        this._logger = _logger;
     }
     public async Task<IdentityResultModel> CreateUserAsync(CreateUserModel userModel, CancellationToken token)
     {

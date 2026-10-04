@@ -15,10 +15,12 @@ public class AuthContoller : ControllerBase
 {
 
     private readonly ISender _sender;
+    private readonly ILogger<AuthContoller> logger;
 
-    public AuthContoller(ISender _sender)
+    public AuthContoller(ISender _sender, ILogger<AuthContoller>logger)
     {
         this._sender = _sender;
+        this.logger = logger;
     }
 
 
@@ -26,6 +28,7 @@ public class AuthContoller : ControllerBase
     public async Task<ActionResult<RegisterResponseDTO>> Register([FromBody] RegisterRequest request, CancellationToken token
         )
     {
+        logger.LogInformation("Registration HTTP Request Recieved, Email: {email}", request.Email.ToString());
         var command = new RegisterCommand
         (
             request.FirstName,
@@ -52,6 +55,9 @@ public class AuthContoller : ControllerBase
         // using centralized error response class to return error response in a structured format.
         if (result.IsFailure)
         {
+            logger.LogError("Registaration HTTP Request Faiiled. Email: {email}, Error code: {errorcode} ",
+               request.Email, result.Error.code);
+
             var ErrorResponse = new ApiErrorResponse(
                 new ApiError(result.Error.code, result.Error.message)
             );
@@ -59,6 +65,7 @@ public class AuthContoller : ControllerBase
             return BadRequest(ErrorResponse);
         }
 
+        logger.LogInformation("Registration HTTP request completed successfully. user Id: {userid}", result.Value.UserId);
         var response = new RegisterResponseDTO(request.Email, result.Value.UserId);
 
         return StatusCode(StatusCodes.Status201Created, response);

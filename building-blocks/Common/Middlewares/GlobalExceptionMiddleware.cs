@@ -1,4 +1,5 @@
 
+using System;
 using System.Net;
 using System.Text.Json;
 using Common.Responses;
@@ -30,6 +31,10 @@ public sealed class GlobalExceptionMiddleware
         // To handle valiation exception thrown by fluent validation, ValidationException  this class belongs to fluent validation
         catch (ValidationException ex)
         {
+            _logger.LogWarning(
+                "Request validation failed. Path: {RequestPath}, FailureCount: {FailureCount}",
+                context.Request.Path,
+                ex.Errors.Count());
             await HandleValidationExceptionAsync(context, ex);
         }
         //To handle Unhandled exception thrown by the application
@@ -39,7 +44,8 @@ public sealed class GlobalExceptionMiddleware
                 ex,
                 "Unhandled exception occurred while processing request {Method} {Path}",
                 context.Request.Method,
-                context.Request.Path
+                context.Request.Path,
+                context.TraceIdentifier
                 );
 
             await HandleExceptionAsync(context);
