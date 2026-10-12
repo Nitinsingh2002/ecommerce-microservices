@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using BuildingBlocks.SharedKernel.Enums;
 
 namespace Authentication.Infrastructure.Authentication;
 
@@ -18,7 +19,7 @@ public class JwtTokenGenerator : IJwtTokenGenrator
     {
         _jwtsettings = jwtsetting.Value;
     }
-    public string GenrateToken(ApplicationUser user)
+    public string GenrateToken(UserIdentityModel user,IReadOnlyCollection<UserRole>roles)
     {
         var claims = new List<Claim>
         {
@@ -28,6 +29,11 @@ public class JwtTokenGenerator : IJwtTokenGenrator
           new(ClaimTypes.Name, user.UserName ?? string.Empty),
           new (JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
+        }
 
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_jwtsettings.SecretKey));
 

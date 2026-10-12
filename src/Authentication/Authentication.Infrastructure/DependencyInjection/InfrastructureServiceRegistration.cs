@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Authentication.Application.Abstractions.Authentication;
 using Authentication.Infrastructure.Authentication;
 using Authentication.Infrastructure.Identity;
+using Authentication.Infrastructure.Persistence.Repositories;
 
 namespace Authentication.Infrastructure.DependencyInjection
 {
@@ -44,6 +45,8 @@ namespace Authentication.Infrastructure.DependencyInjection
 
             services.AddScoped<IIdentityService, IdentityServices>();
             services.AddScoped<IJwtTokenGenrator,JwtTokenGenerator>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
 

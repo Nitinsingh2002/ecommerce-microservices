@@ -1,10 +1,10 @@
+using Authentication.Api.Contracts;
 using Authentication.Api.Contracts.register;
 using Authentication.Api.Contracts.register;
+using Authentication.Application.Features.Login;
 using Authentication.Application.Features.Register;
-using BuildingBlocks.SharedKernel.Results;
 using Common.Responses;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 namespace Authentication.Api.Contollers;
 
@@ -39,19 +39,6 @@ public class AuthContoller : ControllerBase
 
         var result = await _sender.Send(command, token);
 
-        // if (result.IsFailure)
-        // {
-        //     return BadRequest(new
-        //     {
-        //         error = new
-        //         {
-        //             code = result.Error.code,
-        //             message = result.Error.message
-        //         }
-        //     });
-        // }
-
-
         // using centralized error response class to return error response in a structured format.
         if (result.IsFailure)
         {
@@ -69,6 +56,40 @@ public class AuthContoller : ControllerBase
         var response = new RegisterResponseDTO(request.Email, result.Value.UserId);
 
         return StatusCode(StatusCodes.Status201Created, response);
+    }
+
+    [HttpPost("/login")]
+    public async Task<ActionResult> Login([FromBody] LoginRequestDTO request, CancellationToken token)
+    {
+        logger.LogInformation("Login HTTP Request Recieved, Email: {email}", request.Email);
+
+        //converting the request to a command
+
+        var command = new LoginCommand
+        (
+            request.Email,
+            request.Password
+        );
+
+        var result = await _sender.Send(command, token);
+
+        if (result.IsFailure)
+        {
+            var errrorResponse = new ApiErrorResponse(
+                new ApiError(
+                result.Error.code, result.Error.message
+                ));
+
+            return Unauthorized(errrorResponse);
+        }
+        var response = new LoginResponseDTO(
+            AccessToken: result.Value.AccessToke,
+            RefreshToke: result.Value.RefreshToken,
+            AccessTokenExpiration: result.Value.AccessTokenExpiration,
+            RefreshTokenExpiration: result.Value.RefreshTokenExpiration
+            );
+        logger.LogInformation("Login HTTP Requrst completed successfully");
+        return Ok(response);
     }
 
 }

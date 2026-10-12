@@ -1,5 +1,6 @@
 using Authentication.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
+using BuildingBlocks.SharedKernel.Enums;
 
 namespace Authentication.Application.Abstractions.Authentication;
 public interface IIdentityService
@@ -7,7 +8,7 @@ public interface IIdentityService
     public Task<IdentityResultModel> CreateUserAsync(CreateUserModel user, CancellationToken cancellationToken);
     public Task<bool> CheckPasswordAsync(string email, string password, CancellationToken cancellationToken);
     public Task<UserIdentityModel> FindByEmailasync(string email, CancellationToken cancellationToken);
-    public Task<IReadOnlyCollection<string>> GetRoleAsync(Guid UserId, CancellationToken cancellationToken);
+    public Task<IReadOnlyCollection<UserRole>> GetRoleAsync(Guid UserId, CancellationToken cancellationToken);
     public Task<bool> CheckEmailExist(string email);
 
 

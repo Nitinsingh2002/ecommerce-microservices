@@ -1,5 +1,6 @@
 
 
+using BuildingBlocks.SharedKernel.Enums;
 using System.Collections.Generic;
 using Authentication.Application.Abstractions.Authentication;
 using Authentication.Domain.Identity;
@@ -100,20 +101,25 @@ public class IdentityServices : IIdentityService
         }
     }
 
-    public async Task<IReadOnlyCollection<string>> GetRoleAsync(Guid UserId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<UserRole>> GetRoleAsync(Guid UserId, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByIdAsync(UserId.ToString());
 
         if (user == null)
         {
-            return Array.Empty<string>();
+            return Array.Empty<UserRole>();
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
+        //getRoleAsync will return the roles in string format so we need to convert it to UserRole enum
+        IList<string>? roles = await _userManager.GetRolesAsync(user);
+
         if (roles == null || roles.Count == 0)
         {
-            return Array.Empty<string>();
+            return Array.Empty<UserRole>();
         }
-        return roles.ToArray();
+
+        //converting the string roles to userRole enum using Enum.Parse method and returning it as an array
+        var userRoles = roles.Select(role => Enum.Parse<UserRole>(role));
+        return userRoles.ToArray();
     }
 }
