@@ -6,7 +6,7 @@ namespace Authentication.Application.Abstractions.Authentication;
 public interface IIdentityService
 {
     public Task<IdentityResultModel> CreateUserAsync(CreateUserModel user, CancellationToken cancellationToken);
-    public Task<bool> CheckPasswordAsync(string email, string password, CancellationToken cancellationToken);
+    public Task<UserIdentityModel> CheckPasswordAsync(string email, string password, CancellationToken cancellationToken);
     public Task<UserIdentityModel> FindByEmailasync(string email, CancellationToken cancellationToken);
     public Task<IReadOnlyCollection<UserRole>> GetRoleAsync(Guid UserId, CancellationToken cancellationToken);
     public Task<bool> CheckEmailExist(string email);

@@ -1,9 +1,9 @@
 
 
-using BuildingBlocks.SharedKernel.Enums;
 using System.Collections.Generic;
 using Authentication.Application.Abstractions.Authentication;
 using Authentication.Domain.Identity;
+using BuildingBlocks.SharedKernel.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -14,11 +14,16 @@ public class IdentityServices : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<IdentityServices> _logger;
-
-    public IdentityServices(UserManager<ApplicationUser> _userManager,ILogger<IdentityServices> _logger)
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    public IdentityServices(
+    UserManager<ApplicationUser> _userManager,
+    ILogger<IdentityServices> _logger,
+    SignInManager<ApplicationUser> _signInManager
+    )
     {
         this._userManager = _userManager;
         this._logger = _logger;
+        this._signInManager = _signInManager;
     }
     public async Task<IdentityResultModel> CreateUserAsync(CreateUserModel userModel, CancellationToken token)
     {
@@ -36,19 +41,17 @@ public class IdentityServices : IIdentityService
         return new IdentityResultModel
         {
             Succeeded = result.Succeeded,
-
-
-
             UserId = user.Id,
             Errors = result.Errors.Select(err => err.Description).ToArray()
         };
 
     }
 
-    public async Task <bool> AddToRoleAsync (Guid userId, string role, CancellationToken cancellationToken){
+    public async Task<bool> AddToRoleAsync(Guid userId, string role, CancellationToken cancellationToken)
+    {
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
-        if ((user== null))
+        if ((user == null))
         {
             return false;
         }
@@ -59,19 +62,43 @@ public class IdentityServices : IIdentityService
     }
 
 
-    public async Task<bool> CheckPasswordAsync(string email, string password, CancellationToken cancellationToken)
+    public async Task<UserIdentityModel> CheckPasswordAsync(string email, string password, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(email);
 
         if (user == null)
         {
-            return false;
+            _logger.LogWarning("Login failed: Account lookup failed");
+            return null;
+        }
+        // for sign in use signIn manger to get lockout and other sign in policy check if we use userManager.CheckPasswordAsync it will not check for lockout and other sign in policy
+        var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
+
+        if (!result.Succeeded)
+        {
+            if (result.IsLockedOut)
+            {
+                _logger.LogWarning("Login failed for user :{email}, due to account lockout", email);
+                return null;
+            }
+            else
+            {
+                _logger.LogWarning("Login failed for user :{email}, due to invalid credentails", email);
+            }
+            return null;
         }
 
-        return await _userManager.CheckPasswordAsync(user, password);
+        var response = new UserIdentityModel
+        {
+            Id = user.Id,
+            Email = user.Email,
+            UserName = user.UserName
+        };
+
+        return response;
     }
 
-    public async Task<UserIdentityModel> FindByEmailasync(string email,CancellationToken cancellationToken)
+    public async Task<UserIdentityModel> FindByEmailasync(string email, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(email);
 
@@ -91,7 +118,7 @@ public class IdentityServices : IIdentityService
     public async Task<bool> CheckEmailExist(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if(user == null)
+        if (user == null)
         {
             return false;
         }

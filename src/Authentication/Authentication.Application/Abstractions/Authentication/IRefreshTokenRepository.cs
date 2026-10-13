@@ -9,5 +9,4 @@ public interface IRefreshTokenRepository
     public Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken);
 
     public Task UpdateAsync(RefreshToken refreshToken, CancellationToken cancellationToken);
-
 }
