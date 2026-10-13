@@ -3,6 +3,7 @@ using Authentication.Infrastructure.DependencyInjection;
 using Common.Extensions;
 using Infrastucture.Persistence.Seed;
 using Serilog;
+using Authentication.Api.DependencyInjection;
 
 //  serilog configuration
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
@@ -33,6 +34,9 @@ try
     builder.Services.AddApplication();
     builder.Services.addInfrastructure(builder.Configuration);
 
+    //To call the Ratelimmiting confiuration
+    builder.Services.AddApiServices();
+
     //ApplicationServiceRegistration.AddApplication(builder.Services);
     //InfrastructureServiceRegistration.addInfrastructure(builder.Services, builder.Configuration);
 
@@ -56,7 +60,7 @@ try
     }
 
     app.UseHttpsRedirection();
-
+    app.UseRateLimiter();
     app.UseAuthentication();
 
     app.UseAuthorization();

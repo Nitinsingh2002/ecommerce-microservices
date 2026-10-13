@@ -6,6 +6,7 @@ using Authentication.Application.Features.Register;
 using Common.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 namespace Authentication.Api.Contollers;
 
 
@@ -59,6 +60,7 @@ public class AuthContoller : ControllerBase
     }
 
     [HttpPost("/login")]
+    [EnableRateLimiting("LoginPolicy")]
     public async Task<ActionResult> Login([FromBody] LoginRequestDTO request, CancellationToken token)
     {
         logger.LogInformation("Login HTTP Request Recieved, Email: {email}", request.Email);
